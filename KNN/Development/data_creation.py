@@ -43,13 +43,11 @@ data.loc[:, 'RSI'] = 100 - (100 / (1 + (data['Return'].rolling(window=14).mean()
 
 # Volatility (Standard Deviation of Returns over a 20-day window)
 data.loc[:, 'Volatility'] = data['Return'].rolling(window=20).std() * np.sqrt(252)  # Annualized volatility
-print(len(data))
 # Drop rows with NaN values created by rolling calculations
 data.dropna(inplace=True)
 
 # Adding Breakout Labels
 data.loc[:, 'Breakout'] = (data['Adj Close'].shift(-5) >= (data['Adj Close'] * (1+prcnt_gain))).astype(int)
-# data.loc[:, 'Breakout'] = data['Breakout']
 data.dropna(inplace=True)
 data.reset_index(drop=True, inplace=True)
 
