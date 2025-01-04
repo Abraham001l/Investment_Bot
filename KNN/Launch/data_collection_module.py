@@ -8,10 +8,10 @@ cur_dir = os.getcwd()
 # ---------- Basic Params ----------
 ticker = 'VOO'
 prcnt_gain = .01
-start_date = '2024-01-02'
+start_date = '2020-01-01'
 end_date = '2024-11-14' # 2024-11-14
-data_filename = 'VOO_2024-01-02_2024-11-14.csv'
-data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
+data_filename = 'VOO_all.csv'
+data_filename = os.path.join(cur_dir, 'KNN\\Launch\\Datasets', data_filename)
 
 # ---------- Getting Stock Data ----------
 data = yf.download(ticker, start='2020-01-01', auto_adjust=False)
@@ -50,13 +50,8 @@ data.dropna(inplace=True)
 # Adding Breakout Labels
 data.loc[:, 'Breakout'] = data['Adj Close'].shift(-5) >= (data['Adj Close'] * (1+prcnt_gain))
 data.loc[:, 'Breakout'] = data['Breakout'].astype(bool).astype(int)
-data.dropna(inplace=True)
+data.dropna()
 data.reset_index(drop=True, inplace=True)
-
-# ---------- Cropping To Window Of Interest ----------
-start_i = data.loc[data['Date'] == start_date].index[0]
-end_i = data.loc[data['Date'] == end_date].index[0]
-data = data.iloc[start_i:end_i+1]
 
 # ---------- Exporting Data ----------
 data.to_csv(data_filename, index=False)
