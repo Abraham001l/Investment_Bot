@@ -29,7 +29,7 @@ entry_i = None
 for i in range(len(data)-1):
     if not invested:
         # Running Model
-        inputs = pd.DataFrame(data.iloc[i][['MACD (%)', '% Distance 200MA', 'Volume Ratio', 'ATR', 'RSI', 'Volatility']])
+        inputs = pd.DataFrame([data.iloc[i][['MACD (%)', '% Distance 200MA', 'Volume Ratio', 'ATR', 'RSI', 'Volatility']]])
         prediction = model.predict(inputs)[0]
 
         # Processing Response
@@ -38,9 +38,10 @@ for i in range(len(data)-1):
         entry_i = i
     else:
         # Retrieving Hourly Data
-        hourly_data = yf.download(ticker, start=data.iloc[i]['Date'], end=data.iloc[i+1]['Date'], interval='1h')
+        hourly_data = yf.download(ticker, start=data.iloc[i]['Date'], end=data.iloc[i+1]['Date'], auto_adjust=False, interval='1h')
         if not hourly_data.empty:
             hourly_data.index = hourly_data.index.tz_localize(None)  # Remove timezone information
+            hourly_data.columns = hourly_data.columns.get_level_values(0) # Removes multi-header structure
             # Looping Through Hourly Data
             last_price = entry_price
             for i in range(len(hourly_data)):
@@ -50,6 +51,7 @@ for i in range(len(data)-1):
                 if hour_price <= entry_price*(1-prcnt_gain/2):
                     invested = False
                     balance *= (hour_price/entry_price)
+                    break   
                 
                 # Momentum Algo
                 expected_prcnt_gain = ((prcnt_gain/5)/7)*.5
@@ -58,6 +60,7 @@ for i in range(len(data)-1):
                 if cur_prcnt_gain-last_prcnt_gain < expected_prcnt_gain:
                     invested = False
                     balance *= (hour_price/entry_price)
+                    break
                 last_price = hour_price
     # Updating Balacne
     balances.append(balance)

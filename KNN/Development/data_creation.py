@@ -51,10 +51,7 @@ data.dropna(inplace=True)
 data.loc[:, 'Breakout'] = data['Adj Close'].shift(-5) >= (data['Adj Close'] * (1+prcnt_gain))
 data.loc[:, 'Breakout'] = data['Breakout'].astype(bool).astype(int)
 data.dropna()
-print(data.columns)
-print('-------------------------------')
 data.reset_index(drop=True, inplace=True)
-print(data.columns)
 
 # ---------- Cropping To Window Of Interest ----------
 start_i = data.loc[data['Date'] == start_date].index[0]

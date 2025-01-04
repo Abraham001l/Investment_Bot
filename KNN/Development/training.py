@@ -24,5 +24,5 @@ knn.fit(features, labels)
 
 # ---------- Saving KNN Model ----------
 with open(model_filename, 'wb') as file:
-    pickle.dump(model_filename, file)
+    pickle.dump(knn, file)
 print(f"Model saved to {model_filename}")
