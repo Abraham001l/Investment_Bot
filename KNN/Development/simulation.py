@@ -25,6 +25,7 @@ balances = []
 invested = False
 entry_price = None
 entry_i = None
+days_invested = 0
 
 for i in range(len(data)-1):
     if not invested:
@@ -36,6 +37,7 @@ for i in range(len(data)-1):
         invested = prediction == 1
         entry_price = data.iloc[i]['Adj Close']
         entry_i = i
+        days_invested = 1
     else:
         # Retrieving Hourly Data
         hourly_data = yf.download(ticker, start=data.iloc[i]['Date'], end=data.iloc[i+1]['Date'], auto_adjust=False, interval='1h')
@@ -43,7 +45,8 @@ for i in range(len(data)-1):
             hourly_data.index = hourly_data.index.tz_localize(None)  # Remove timezone information
             hourly_data.columns = hourly_data.columns.get_level_values(0) # Removes multi-header structure
             # Looping Through Hourly Data
-            last_price = entry_price
+            if days_invested == 1:
+                last_price = entry_price
             for i in range(len(hourly_data)):
                 hour_price = hourly_data.iloc[i]['Adj Close']
 
@@ -62,6 +65,7 @@ for i in range(len(data)-1):
                     balance *= (hour_price/entry_price)
                     break
                 last_price = hour_price
+        days_invested += 1
     # Updating Balacne
     balances.append(balance)
 data['Balance'] = balances+[balance]
