@@ -8,9 +8,9 @@ cur_dir = os.getcwd()
 # ---------- Basic Params ----------
 ticker = 'VOO'
 prcnt_gain = .01
-start_date = '2020-10-15'
-end_date = '2023-12-29' # 2024-11-14
-data_filename = 'VOO_2020-10-15_2023-12-29.csv'
+start_date = '2024-01-02'
+end_date = '2024-11-14' # 2024-11-14
+data_filename = 'VOO_2024-01-02_2024-11-14.csv'
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
 
 # ---------- Getting Stock Data ----------
@@ -51,13 +51,14 @@ data.dropna(inplace=True)
 data.loc[:, 'Breakout'] = data['Adj Close'].shift(-5) >= (data['Adj Close'] * (1+prcnt_gain))
 data.loc[:, 'Breakout'] = data['Breakout'].astype(bool).astype(int)
 data.dropna()
+print(data.columns)
+print('-------------------------------')
+data.reset_index(drop=True, inplace=True)
+print(data.columns)
 
 # ---------- Cropping To Window Of Interest ----------
-print(data.iloc[0]['Date'])
-start_i = data['Date'].index(start_date)
-end_i = data[data['Date'] == end_date].index[0]
-print(start_i)
-print(end_i)
+start_i = data.loc[data['Date'] == start_date].index[0]
+end_i = data.loc[data['Date'] == end_date].index[0]
 data = data.iloc[start_i:end_i+1]
 
 # ---------- Exporting Data ----------

@@ -1,9 +1,5 @@
-import yfinance as yf
 import pandas as pd
-import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 import pickle
 import os
 
@@ -11,8 +7,8 @@ import os
 cur_dir = os.getcwd()
 
 # ---------- Basic Params ----------
-data_filename = 'VOO_2020-01-01_2023-11-24.csv'
-model_filename = 'VOO_2020-01-01_2023-11-24.pkl'
+data_filename = 'VOO_2020-10-15_2023-12-29.csv'
+model_filename = 'VOO_2020-10-15_2023-12-29.pkl'
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
 model_filename = os.path.join(cur_dir, 'KNN\\Development\\Models', model_filename)
 
