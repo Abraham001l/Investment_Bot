@@ -1,5 +1,4 @@
 import yfinance as yf
-import pandas as pd
 import numpy as np
 import os
 
@@ -8,14 +7,16 @@ cur_dir = os.getcwd()
 
 # ---------- Basic Params ----------
 ticker = 'VOO'
-start_date = '2020-01-01'
-end_date = '2024-01-05' # 2023-11-14
-data_filename = 'VOO_2020-01-01_2023-11-24.csv'
+prcnt_gain = .01
+start_date = '2020-10-15'
+end_date = '2023-12-29' # 2024-11-14
+data_filename = 'VOO_2020-10-15_2023-12-29.csv'
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
 
 # ---------- Getting Stock Data ----------
-data = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False)
+data = yf.download(ticker, start='2020-01-01', auto_adjust=False)
 data.reset_index(inplace=True)
+data['Date'] = data['Date'].dt.strftime('%Y-%m-%d')  # Convert Date to strings
 data.columns = data.columns.get_level_values(0) # Removes multi-header structure
 
 # ---------- Creating Features ----------
@@ -42,13 +43,22 @@ data.loc[:, 'RSI'] = 100 - (100 / (1 + (data['Return'].rolling(window=14).mean()
 
 # Volatility (Standard Deviation of Returns over a 20-day window)
 data.loc[:, 'Volatility'] = data['Return'].rolling(window=20).std() * np.sqrt(252)  # Annualized volatility
-
+print(len(data))
 # Drop rows with NaN values created by rolling calculations
 data.dropna(inplace=True)
 
 # Adding Breakout Labels
-data.loc[:, 'Breakout'] = data['Adj Close'].shift(-5) >= (data['Adj Close'] * 1.01)
+data.loc[:, 'Breakout'] = data['Adj Close'].shift(-5) >= (data['Adj Close'] * (1+prcnt_gain))
 data.loc[:, 'Breakout'] = data['Breakout'].astype(bool).astype(int)
 data.dropna()
 
+# ---------- Cropping To Window Of Interest ----------
+print(data.iloc[0]['Date'])
+start_i = data['Date'].index(start_date)
+end_i = data[data['Date'] == end_date].index[0]
+print(start_i)
+print(end_i)
+data = data.iloc[start_i:end_i+1]
+
+# ---------- Exporting Data ----------
 data.to_csv(data_filename, index=False)
