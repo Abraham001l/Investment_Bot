@@ -48,8 +48,8 @@ print(len(data))
 data.dropna(inplace=True)
 
 # Adding Breakout Labels
-data.loc[:, 'Breakout'] = data['Adj Close'].shift(-5) >= (data['Adj Close'] * (1+prcnt_gain))
-data.loc[:, 'Breakout'] = data['Breakout'].astype(bool).astype(int)
+data.loc[:, 'Breakout'] = (data['Adj Close'].shift(-5) >= (data['Adj Close'] * (1+prcnt_gain))).astype(int)
+# data.loc[:, 'Breakout'] = data['Breakout']
 data.dropna(inplace=True)
 data.reset_index(drop=True, inplace=True)
 
