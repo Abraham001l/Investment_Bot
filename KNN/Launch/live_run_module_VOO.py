@@ -13,8 +13,8 @@ cur_dir = os.getcwd()
 ticker = 'VOO'
 data_filename = 'VOO_all.csv'
 model_filename = 'VOO_2020-10-15_2023-12-29.pkl'
-data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
-model_filename = os.path.join(cur_dir, 'KNN\\Development\\Models', model_filename)
+data_filename = os.path.join(cur_dir, 'KNN\\Launch\\Datasets', data_filename)
+model_filename = os.path.join(cur_dir, 'KNN\\Launch\\Models', model_filename)
 
 # ---------- Important Global Variables ----------
 invested = False
@@ -49,7 +49,7 @@ def schedule_daily():
 
 # ---------- Setting Up Functions For Hourly Runs ----------
 def run_investment_algorithm():
-    
+
     None
 
 hourly_times = [[8,31], [9,31], [10, 31], [11, 31], [12, 31], [13, 31], [14, 31]] # [Hour, Minute]

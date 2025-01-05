@@ -37,7 +37,15 @@
 
 
 
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
 
-x = datetime.now()
-print(x+timedelta(days=1))
+# x = datetime.now()
+# print(x+timedelta(days=1))
+
+import pandas as pd
+import os
+
+cur_dir = os.getcwd()
+data_filename = os.path.join(cur_dir, 'KNN\\Launch\\InvestmentTrackers', 'investment_history.csv')
+df = pd.read_csv(data_filename)
+print(df)
