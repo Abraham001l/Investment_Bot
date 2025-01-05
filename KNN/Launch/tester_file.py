@@ -15,11 +15,11 @@
 # import pytz
 
 # central_tz = pytz.timezone('US/Central')
-# data = yf.download('VOO', start='2025-01-03', interval='1h')
+# data = yf.download('VOO', start='2025-01-03', interval='1m')
 # data.index = data.index.tz_convert(central_tz)
 # print(data)
 
-from apscheduler.schedulers.background import BlockingScheduler
+# from apscheduler.schedulers.background import BlockingScheduler
 
 # def job():
 #     print('ran')
@@ -37,7 +37,7 @@ from apscheduler.schedulers.background import BlockingScheduler
 
 
 
-# from datetime import datetime
+from datetime import datetime, timedelta
 
-# x = datetime.now()
-# print(x.isoweekday())
+x = datetime.now()
+print(x+timedelta(days=1))

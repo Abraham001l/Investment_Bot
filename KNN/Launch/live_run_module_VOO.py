@@ -1,5 +1,5 @@
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from KNN.Launch.data_collection_module import update_dataset
 import pickle
@@ -18,7 +18,8 @@ model_filename = os.path.join(cur_dir, 'KNN\\Development\\Models', model_filenam
 
 # ---------- Important Global Variables ----------
 invested = False
-scheduler = BlockingScheduler()
+scheduler = None
+scheduled_id = None
 central_tz = pytz.timezone('US/Central')
 
 # ---------- Setting Up Functions For Daily Runs ----------
@@ -32,8 +33,35 @@ def run_model():
     inputs = pd.DataFrame([data.iloc[-1][['MACD (%)', '% Distance 200MA', 'Volume Ratio', 'ATR', 'RSI', 'Volatility']]])
     invested = model.predict(inputs)[0] == 1
 
+    # Terminating Scheduler To Move On
+    scheduled_id.remove()
+    scheduler.shutdown(wait=False)
+
+daily_times = [7, 1, 2, 3, 4]
+
+def schedule_daily():
+    today = datetime.now()
+    if today.day not in daily_times or today.hour >= 20:
+        today = today+timedelta(days=1)
+    today.hour, today.minute, today.second = 20, 0, 0
+    scheduler = BlockingScheduler()
+    scheduled_id = scheduler.add_job(run_model, 'date', run_date=today)
+
 # ---------- Setting Up Functions For Hourly Runs ----------
 def run_investment_algorithm():
+    
     None
 
+hourly_times = [[8,31], [9,31], [10, 31], [11, 31], [12, 31], [13, 31], [14, 31]] # [Hour, Minute]
+
+def schedule_hourly():
+    today = datetime.now()
+    today.hour, today.minute, today.second = 20, 0, 0
+
 # ---------- Live Run Loop ----------
+while True:
+    if not invested:
+        schedule_daily()
+        scheduler.start()
+    else:
+        None
