@@ -17,7 +17,7 @@ data_filename = os.path.join(cur_dir, 'KNN\\Launch\\Datasets', data_filename)
 model_filename = os.path.join(cur_dir, 'KNN\\Launch\\Models', model_filename)
 
 # ---------- Important Global Variables ----------
-invested = False
+investing = False
 scheduler = None
 scheduled_id = None
 central_tz = pytz.timezone('US/Central')
@@ -31,9 +31,12 @@ def run_model():
     # Running Model
     model = pickle.load(open(model_filename, 'rb'))
     inputs = pd.DataFrame([data.iloc[-1][['MACD (%)', '% Distance 200MA', 'Volume Ratio', 'ATR', 'RSI', 'Volatility']]])
-    invested = model.predict(inputs)[0] == 1
+    global investing
+    investing = model.predict(inputs)[0] == 1
 
     # Terminating Scheduler To Move On
+    global scheduler
+    global scheduled_id
     scheduled_id.remove()
     scheduler.shutdown(wait=False)
 
@@ -41,26 +44,44 @@ daily_times = [7, 1, 2, 3, 4]
 
 def schedule_daily():
     today = datetime.now()
-    if today.day not in daily_times or today.hour >= 20:
+    if today.isoweekday() not in daily_times or today.hour >= 20:
         today = today+timedelta(days=1)
-    today.hour, today.minute, today.second = 20, 0, 0
+    exec_date = today.replace(hour=20, minute=0, second=0, microsecond=0)
+    global scheduler
+    global scheduled_id
     scheduler = BlockingScheduler()
-    scheduled_id = scheduler.add_job(run_model, 'date', run_date=today)
+    scheduled_id = scheduler.add_job(run_model, 'date', run_date=exec_date)
 
 # ---------- Setting Up Functions For Hourly Runs ----------
 def run_investment_algorithm():
-
+    
     None
 
-hourly_times = [[8,31], [9,31], [10, 31], [11, 31], [12, 31], [13, 31], [14, 31]] # [Hour, Minute]
+hourly_times = [8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5] # [Hour, Minute]
 
 def schedule_hourly():
     today = datetime.now()
-    today.hour, today.minute, today.second = 20, 0, 0
+    td_time = today.hour+(today.minute/60)
+    time_location = 0
+    day_delta = 0
+    for i in range(len(hourly_times)):
+        if td_time < hourly_times[i]:
+            time_location = i
+            day_delta = 0
+            break
+        if i == 6:
+            time_location = 0
+            day_delta = 1
+    exec_date = today.replace(hour=int(hourly_times[time_location]), minute=30)+timedelta(days=day_delta)
+    global scheduler
+    global scheduled_id
+    scheduler = BlockingScheduler()
+    scheduled_id = scheduler.add_job(run_investment_algorithm, 'date', run_date=exec_date)
+
 
 # ---------- Live Run Loop ----------
 while True:
-    if not invested:
+    if not investing:
         schedule_daily()
         scheduler.start()
     else:

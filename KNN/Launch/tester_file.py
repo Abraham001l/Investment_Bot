@@ -15,7 +15,7 @@
 # import pytz
 
 # central_tz = pytz.timezone('US/Central')
-# data = yf.download('VOO', start='2025-01-03', interval='1m')
+# data = yf.download('VOO', start='2025-01-06', interval='1m')
 # data.index = data.index.tz_convert(central_tz)
 # print(data)
 
@@ -40,12 +40,21 @@
 # from datetime import datetime, timedelta
 
 # x = datetime.now()
-# print(x+timedelta(days=1))
+# y = x
+# y = y.replace(hour=20, minute=0, second=0, microsecond=0)+timedelta(days=1)
+# print(y)
+# print(x.minute)
+# print(x.isoweekday())
 
 import pandas as pd
 import os
 
+a = [2]
+a[1:] = [3]
+print(a)
 cur_dir = os.getcwd()
 data_filename = os.path.join(cur_dir, 'KNN\\Launch\\InvestmentTrackers', 'investment_history.csv')
 df = pd.read_csv(data_filename)
+new_row = pd.DataFrame({'Date':[4], 'Adj Close':[23]})
+df = pd.concat([df, new_row],ignore_index=True)
 print(df)
