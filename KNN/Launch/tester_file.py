@@ -49,12 +49,37 @@
 import pandas as pd
 import os
 
-a = [2]
-a[1:] = [3]
-print(a)
 cur_dir = os.getcwd()
 data_filename = os.path.join(cur_dir, 'KNN\\Launch\\InvestmentTrackers', 'investment_history.csv')
 df = pd.read_csv(data_filename)
 new_row = pd.DataFrame({'Date':[4], 'Adj Close':[23]})
 df = pd.concat([df, new_row],ignore_index=True)
-print(df)
+df.to_csv(data_filename, index=False)
+
+# from datetime import datetime
+
+# print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+
+# from dotenv import load_dotenv, dotenv_values
+# from email.message import EmailMessage
+# import ssl
+# import smtplib
+# import os
+
+# load_dotenv()
+
+# email_sender = os.getenv("EMAIL")
+# email_password = os.getenv("APP_PASSWORD")
+# email_receiver = os.getenv("EMAIL")
+
+# em = EmailMessage()
+# em['From'] = email_sender
+# em['To'] = email_receiver
+# em['Subject'] = 'subject'
+# em.set_content('body')
+
+# context = ssl.create_default_context()
+
+# with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+#     smtp.login(email_sender, email_password)
+#     smtp.sendmail(email_sender, email_receiver, em.as_string())

@@ -42,7 +42,6 @@ for i in range(len(data)-1):
         # Retrieving Hourly Data
         hourly_data = yf.download(ticker, start=data.iloc[i]['Date'], end=data.iloc[i+1]['Date'], auto_adjust=False, interval='1h')
         if not hourly_data.empty:
-            hourly_data.index = hourly_data.index.tz_localize(None)  # Remove timezone information
             hourly_data.columns = hourly_data.columns.get_level_values(0) # Removes multi-header structure
             # Looping Through Hourly Data
             if days_invested == 1:
