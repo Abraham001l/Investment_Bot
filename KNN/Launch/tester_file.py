@@ -19,21 +19,21 @@
 # data.index = data.index.tz_convert(central_tz)
 # print(data)
 
-# from apscheduler.schedulers.background import BlockingScheduler
+from apscheduler.schedulers.background import BlockingScheduler
+from datetime import datetime, timedelta
 
-# def job():
-#     print('ran')
-#     scheduled_id.remove()
-#     scheduler.shutdown(wait=False)
 
-# scheduler = BlockingScheduler()
-# scheduled_id = scheduler.add_job(job, 'interval', seconds = 3)
+def job():
+    print('ran')
+    scheduler.shutdown(wait=False)
 
-# while True:
-#     scheduler.start()
-#     print('im here')
-#     scheduler = BlockingScheduler()
-#     scheduled_id = scheduler.add_job(job, 'interval', seconds = 3)
+scheduler = BlockingScheduler()
+scheduled_id = scheduler.add_job(job, 'date', run_date=(datetime.now()+timedelta(seconds=5)))
+
+while True:
+    print('back')
+    scheduler.start()
+    print('im here')
 
 
 

@@ -9,6 +9,7 @@ from dotenv import load_dotenv, dotenv_values
 from email.message import EmailMessage
 import ssl
 import smtplib
+import numpy as np
 
 # ---------- Setting Up Directory & Env Variable ----------
 cur_dir = os.getcwd()
@@ -26,7 +27,6 @@ history_filename = os.path.join(cur_dir, 'KNN\\Launch\\InvestmentTrackers', 'inv
 # ---------- Important Global Variables ----------
 investing = False
 scheduler = None
-scheduled_id = None
 central_tz = pytz.timezone('US/Central')
 entry_price = None
 
@@ -118,9 +118,6 @@ def run_model():
         send_alert("ENTERED VOO", "TRADED")
 
     # Terminating Scheduler To Move On
-    global scheduler
-    global scheduled_id
-    scheduled_id.remove()
     scheduler.shutdown(wait=False)
 
 daily_times = [7, 1, 2, 3, 4]
@@ -131,9 +128,8 @@ def schedule_daily():
         today = today+timedelta(days=1)
     exec_date = today.replace(hour=20, minute=0, second=0, microsecond=0)
     global scheduler
-    global scheduled_id
     scheduler = BlockingScheduler()
-    scheduled_id = scheduler.add_job(run_model, 'date', run_date=exec_date)
+    scheduler.add_job(run_model, 'date', run_date=exec_date)
     print(f'Scheduled Model Execution For {exec_date}')
 
 # ---------- Setting Up Functions For Hourly Runs ----------
@@ -169,9 +165,6 @@ def run_investment_algorithm():
     trade_history.to_csv(history_filename, index=False)
 
     # Terminating Scheduler To Move On
-    global scheduler
-    global scheduled_id
-    scheduled_id.remove()
     scheduler.shutdown(wait=False)
 
 hourly_times = [8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5] # [Hour, Minute]
@@ -191,9 +184,8 @@ def schedule_hourly():
             day_delta = 1
     exec_date = today.replace(hour=int(hourly_times[time_location]), minute=30)+timedelta(days=day_delta)
     global scheduler
-    global scheduled_id
     scheduler = BlockingScheduler()
-    scheduled_id = scheduler.add_job(run_investment_algorithm, 'date', run_date=exec_date)
+    scheduler.add_job(run_investment_algorithm, 'date', run_date=exec_date)
     print(f'Scheduled Algorithm Check For {exec_date}')
 
 
@@ -203,5 +195,5 @@ while True:
         schedule_daily()
         scheduler.start()
     else:
-        schedule_hourly
+        schedule_hourly()
         scheduler.start()
