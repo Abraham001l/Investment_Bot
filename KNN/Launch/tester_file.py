@@ -22,18 +22,23 @@
 from apscheduler.schedulers.background import BlockingScheduler
 from datetime import datetime, timedelta
 
+# def job2():
+#     # print(scheduler.state)
+#     print('executed')
 
-def job():
-    print('ran')
-    scheduler.shutdown(wait=False)
+# def job():
+#     print('ran')
+#     job2()
+#     scheduler.shutdown(wait=False)
 
-scheduler = BlockingScheduler()
-scheduled_id = scheduler.add_job(job, 'date', run_date=(datetime.now()+timedelta(seconds=5)))
-
-while True:
-    print('back')
-    scheduler.start()
-    print('im here')
+# while True:
+#     global scheduler
+#     scheduler = BlockingScheduler()
+#     scheduled_id = scheduler.add_job(job, 'date', run_date=(datetime.now()+timedelta(seconds=5)))
+#     print('back')
+#     scheduler.start()
+#     print('im here')
+print(datetime.now())
 
 
 

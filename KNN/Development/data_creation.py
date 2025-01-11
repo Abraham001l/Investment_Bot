@@ -8,9 +8,9 @@ cur_dir = os.getcwd()
 # ---------- Basic Params ----------
 ticker = 'VOO'
 prcnt_gain = .01
-start_date = '2024-01-02'
-end_date = '2024-11-14' # 2024-11-14
-data_filename = 'VOO_2024-01-02_2024-11-14.csv'
+start_date = '2020-10-15'#2021-04-30
+end_date = '2024-06-28' #2024-06-28
+data_filename = 'VOO_2020-10-15_2024-06-28.csv'
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
 
 # ---------- Getting Stock Data ----------

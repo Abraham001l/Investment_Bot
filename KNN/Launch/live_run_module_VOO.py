@@ -118,6 +118,7 @@ def run_model():
         send_alert("ENTERED VOO", "TRADED")
 
     # Terminating Scheduler To Move On
+    global scheduler
     scheduler.shutdown(wait=False)
 
 daily_times = [7, 1, 2, 3, 4]
@@ -132,6 +133,26 @@ def schedule_daily():
     scheduler.add_job(run_model, 'date', run_date=exec_date)
     print(f'Scheduled Model Execution For {exec_date}')
 
+# ---------- Setting Up Algorithm Functions ----------
+def stop_loss_algo(curr_price): # Works On Any Timeframe Data
+    global investing
+
+    # Stop Loss Algo
+    if curr_price <= entry_price*(1-prcnt_gain/2):
+        investing = False
+        send_alert("EXITED VOO", "TRADED")
+
+def momentum_algo(cur_price, last_price): # Works On Hourly Data
+    global investing
+
+    # Momentum Algo
+    expected_prcnt_gain = ((prcnt_gain/5)/7)*.5
+    last_prcnt_gain = last_price/entry_price
+    cur_prcnt_gain = cur_price/entry_price
+    if cur_prcnt_gain-last_prcnt_gain < expected_prcnt_gain and investing:
+        investing = False
+        send_alert("EXITED VOO", "TRADED")
+
 # ---------- Setting Up Functions For Hourly Runs ----------
 def run_investment_algorithm():
     # Opening History and Minute Data
@@ -143,28 +164,19 @@ def run_investment_algorithm():
     last_price = trade_history.iloc[-1]['Adj Close']
     hour_price = minute_data.iloc[-2]['Adj Close']
 
-    global investing
-
-    # Stop Loss Algo
-    if hour_price <= entry_price*(1-prcnt_gain/2):
-        investing = False
-        send_alert("EXITED VOO", "TRADED")
+    stop_loss_algo(hour_price)
     
-    # Momentum Algo
-    expected_prcnt_gain = ((prcnt_gain/5)/7)*.5
-    last_prcnt_gain = last_price/entry_price
-    cur_prcnt_gain = hour_price/entry_price
-    if cur_prcnt_gain-last_prcnt_gain < expected_prcnt_gain and investing:
-        investing = False
-        send_alert("EXITED VOO", "TRADED")
+    momentum_algo(hour_price, last_price)
     
     # Updating Trade History
     new_log = pd.DataFrame({'Date':[datetime.now().strftime("%m/%d/%Y, %H:%M:%S")],
-                              'Adj Close':hour_price})
+                              'Adj Close':hour_price,
+                              'LogTimeFrame':'Hourly'})
     trade_history = pd.concat([trade_history, new_log],ignore_index=True)
     trade_history.to_csv(history_filename, index=False)
 
     # Terminating Scheduler To Move On
+    global scheduler
     scheduler.shutdown(wait=False)
 
 hourly_times = [8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5] # [Hour, Minute]
@@ -188,6 +200,39 @@ def schedule_hourly():
     scheduler.add_job(run_investment_algorithm, 'date', run_date=exec_date)
     print(f'Scheduled Algorithm Check For {exec_date}')
 
+# ---------- Setting Up Functions For Minutely Runs ----------
+def run_minute_stop_loss():
+    # Opening History and Minute Data
+    trade_history = pd.read_csv(history_filename)
+    minute_data = yf.download('VOO', start='2025-01-06', interval='1m')
+    minute_data.columns = minute_data.columns.get_level_values(0) # Removes multi-header structure
+
+    # Gathering Values For Calculations
+    hour_price = minute_data.iloc[-2]['Adj Close']
+
+    stop_loss_algo(hour_price)
+
+    # Updating Trade History
+    new_log = pd.DataFrame({'Date':[datetime.now().strftime("%m/%d/%Y, %H:%M:%S")],
+                              'Adj Close':hour_price,
+                              'LogTimeFrame':'Minutely'})
+    trade_history = pd.concat([trade_history, new_log],ignore_index=True)
+    trade_history.to_csv(history_filename, index=False)
+
+    # Terminating Scheduler To Move On
+    global investing
+    global scheduler
+    if not investing:
+        scheduler.shutdown(wait=False)
+
+def schedule_minutely():
+    today = datetime.now()
+    td_time = today.hour+(today.minute/60)
+    if td_time >= 8.5 and td_time <= 14.75:
+        exec_date = today+timedelta(minutes=10)
+        global scheduler
+        scheduler.add_job(run_minute_stop_loss, 'date', run_date=exec_date)
+
 
 # ---------- Live Run Loop ----------
 while True:
@@ -196,4 +241,5 @@ while True:
         scheduler.start()
     else:
         schedule_hourly()
+        schedule_minutely()
         scheduler.start()

@@ -10,7 +10,7 @@ cur_dir = os.getcwd()
 # ---------- Basic Params ----------
 ticker = 'VOO'
 prcnt_gain = .01
-data_filename = 'VOO_2024-01-02_2024-11-14.csv'
+data_filename = 'VOO_2024-01-02_2024-12-06.csv'
 model_filename = 'VOO_2020-10-15_2023-12-29.pkl'
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
 model_filename = os.path.join(cur_dir, 'KNN\\Development\\Models', model_filename)
@@ -53,7 +53,7 @@ for i in range(len(data)-1):
                 if hour_price <= entry_price*(1-prcnt_gain/2):
                     invested = False
                     balance *= (hour_price/entry_price)
-                    break   
+                    break
                 
                 # Momentum Algo
                 expected_prcnt_gain = ((prcnt_gain/5)/7)*.5
