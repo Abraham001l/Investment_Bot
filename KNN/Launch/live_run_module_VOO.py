@@ -224,6 +224,8 @@ def run_minute_stop_loss():
     global scheduler
     if not investing:
         scheduler.shutdown(wait=False)
+    else:
+        schedule_minutely()
 
 def schedule_minutely():
     today = datetime.now()
