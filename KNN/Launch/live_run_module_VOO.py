@@ -22,7 +22,7 @@ data_filename = 'VOO_all.csv'
 model_filename = 'VOO_2020-10-15_2023-12-29.pkl'
 data_filename = os.path.join(cur_dir, 'KNN\\Launch\\Datasets', data_filename)
 model_filename = os.path.join(cur_dir, 'KNN\\Launch\\Models', model_filename)
-history_filename = os.path.join(cur_dir, 'KNN\\Launch\\InvestmentTrackers', 'investment_history.csv')
+history_filename = os.path.join(cur_dir, 'KNN\\Launch\\InvestmentTrackers', 'trade_tracker.csv')
 
 # ---------- Important Global Variables ----------
 investing = False
@@ -115,7 +115,7 @@ def run_model():
     investing = model.predict(inputs)[0] == 1
     if investing:
         mark_entry(daily_data)
-        send_alert("ENTERED VOO", "TRADED")
+        send_alert(f"ENTERED VOO {daily_data.iloc[-1]['Adj Close']}", "TRADED")
 
     # Terminating Scheduler To Move On
     global scheduler
@@ -125,7 +125,7 @@ daily_times = [7, 1, 2, 3, 4]
 
 def schedule_daily():
     today = datetime.now()
-    if today.isoweekday() not in daily_times or today.hour >= 20:
+    if today.isoweekday() not in daily_times or (today.hour >= 20 and today.second >= 1):
         today = today+timedelta(days=1)
     exec_date = today.replace(hour=20, minute=0, second=0, microsecond=0)
     global scheduler
@@ -134,13 +134,13 @@ def schedule_daily():
     print(f'Scheduled Model Execution For {exec_date}')
 
 # ---------- Setting Up Algorithm Functions ----------
-def stop_loss_algo(curr_price): # Works On Any Timeframe Data
+def stop_loss_algo(cur_price): # Works On Any Timeframe Data
     global investing
 
     # Stop Loss Algo
-    if curr_price <= entry_price*(1-prcnt_gain/2):
+    if cur_price <= entry_price*(1-prcnt_gain/2):
         investing = False
-        send_alert("EXITED VOO", "TRADED")
+        send_alert(f"EXITED VOO {cur_price}", "TRADED")
 
 def momentum_algo(cur_price, last_price): # Works On Hourly Data
     global investing
@@ -151,7 +151,7 @@ def momentum_algo(cur_price, last_price): # Works On Hourly Data
     cur_prcnt_gain = cur_price/entry_price
     if cur_prcnt_gain-last_prcnt_gain < expected_prcnt_gain and investing:
         investing = False
-        send_alert("EXITED VOO", "TRADED")
+        send_alert(f"EXITED VOO {cur_price}", "TRADED")
 
 # ---------- Setting Up Functions For Hourly Runs ----------
 def run_investment_algorithm():
