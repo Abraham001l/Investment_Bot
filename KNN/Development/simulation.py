@@ -10,13 +10,16 @@ cur_dir = os.getcwd()
 # ---------- Basic Params ----------
 ticker = 'VOO'
 prcnt_gain = .01
-data_filename = 'VOO_2024-01-02_2024-12-06.csv'
-model_filename = 'VOO_2020-10-15_2023-12-29.pkl'
+data_filename = 'VOO_2024-06-28_2025-01-10.csv'
+model_filename = 'VOO_2020-10-15_2023-12-29.pkl' #VOO_2020-10-15_2024-06-28.pkl
+model2_filename = 'VOO_2020-10-15_2024-06-28.pkl'
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
 model_filename = os.path.join(cur_dir, 'KNN\\Development\\Models', model_filename)
+model2_filename = os.path.join(cur_dir, 'KNN\\Development\\Models', model2_filename)
 
 # ---------- Seting Up Model ----------
 model = pickle.load(open(model_filename, 'rb'))
+model2 = pickle.load(open(model2_filename, 'rb'))
 data = pd.read_csv(data_filename)
 
 # ---------- Simulation Loop ----------
@@ -32,9 +35,10 @@ for i in range(len(data)-1):
         # Running Model
         inputs = pd.DataFrame([data.iloc[i][['MACD (%)', '% Distance 200MA', 'Volume Ratio', 'ATR', 'RSI', 'Volatility']]])
         prediction = model.predict(inputs)[0]
+        prediction2 = model2.predict(inputs)[0]
 
         # Processing Response
-        invested = prediction == 1
+        invested = prediction == 1 and prediction2 == 1
         entry_price = data.iloc[i]['Adj Close']
         entry_i = i
         days_invested = 1
