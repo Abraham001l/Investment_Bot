@@ -11,16 +11,17 @@
 # data = pd.read_csv(data_filename)
 # print(data.iloc[-1])
 
-# import yfinance as yf
-# import pytz
+import yfinance as yf
+import pytz
 
-# central_tz = pytz.timezone('US/Central')
-# data = yf.download('VOO', start='2025-01-06', interval='1m')
-# data.index = data.index.tz_convert(central_tz)
-# print(data)
+central_tz = pytz.timezone('US/Central')
+data = yf.download('VOO', start='2025-01-06', interval='1m', auto_adjust=False)
+data.index = data.index.tz_convert(central_tz)
+print(data)
+print(data['Adj Open'])
 
-from apscheduler.schedulers.background import BlockingScheduler
-from datetime import datetime, timedelta
+# from apscheduler.schedulers.background import BlockingScheduler
+# from datetime import datetime, timedelta
 
 # def job2():
 #     # print(scheduler.state)

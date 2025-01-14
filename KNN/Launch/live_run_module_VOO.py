@@ -98,7 +98,8 @@ def mark_entry(stock_data):
     blank_row = pd.DataFrame({'Date':[0], 'Adj Close':[0]})
     entry_price = stock_data.iloc[-1]['Adj Close']
     entry_row = pd.DataFrame({'Date':[datetime.now().strftime("%m/%d/%Y, %H:%M:%S")],
-                              'Adj Close':entry_price})
+                              'Adj Close':entry_price,
+                              'LogTimeFrame':'Daily'})
     trade_history = pd.concat([trade_history, blank_row],ignore_index=True)
     trade_history = pd.concat([trade_history, entry_row],ignore_index=True)
     trade_history.to_csv(history_filename, index=False)
@@ -127,7 +128,7 @@ def schedule_daily():
     today = datetime.now()
     if today.isoweekday() not in daily_times or (today.hour >= 20 and today.second >= 1):
         today = today+timedelta(days=1)
-    exec_date = today.replace(hour=20, minute=0, second=0, microsecond=0)
+    exec_date = today.replace(hour=17, minute=55, second=5, microsecond=0)
     global scheduler
     scheduler = BlockingScheduler()
     scheduler.add_job(run_model, 'date', run_date=exec_date)
@@ -194,7 +195,7 @@ def schedule_hourly():
         if i == 6:
             time_location = 0
             day_delta = 1
-    exec_date = today.replace(hour=int(hourly_times[time_location]), minute=30)+timedelta(days=day_delta)
+    exec_date = today.replace(hour=int(hourly_times[time_location]), minute=31, second=0, microsecond=0)+timedelta(days=day_delta)
     global scheduler
     scheduler = BlockingScheduler()
     scheduler.add_job(run_investment_algorithm, 'date', run_date=exec_date)
