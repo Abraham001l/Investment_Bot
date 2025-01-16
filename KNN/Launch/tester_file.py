@@ -13,12 +13,16 @@
 
 import yfinance as yf
 import pytz
+from datetime import datetime
+
+x = datetime.now()
+print(x.strftime('%Y-%m-%d'))
 
 central_tz = pytz.timezone('US/Central')
-data = yf.download('VOO', start='2025-01-06', interval='1m', auto_adjust=False)
+data = yf.download('VOO', start=x.strftime('%Y-%m-%d'), interval='1m', auto_adjust=False)
 data.index = data.index.tz_convert(central_tz)
 print(data)
-print(data['Adj Open'])
+print(data['Adj Close'])
 
 # from apscheduler.schedulers.background import BlockingScheduler
 # from datetime import datetime, timedelta
@@ -39,7 +43,7 @@ print(data['Adj Open'])
 #     print('back')
 #     scheduler.start()
 #     print('im here')
-print(datetime.now())
+# print(datetime.now())
 
 
 
@@ -52,15 +56,15 @@ print(datetime.now())
 # print(x.minute)
 # print(x.isoweekday())
 
-import pandas as pd
-import os
+# import pandas as pd
+# import os
 
-cur_dir = os.getcwd()
-data_filename = os.path.join(cur_dir, 'KNN\\Launch\\InvestmentTrackers', 'investment_history.csv')
-df = pd.read_csv(data_filename)
-new_row = pd.DataFrame({'Date':[4], 'Adj Close':[23]})
-df = pd.concat([df, new_row],ignore_index=True)
-df.to_csv(data_filename, index=False)
+# cur_dir = os.getcwd()
+# data_filename = os.path.join(cur_dir, 'KNN\\Launch\\InvestmentTrackers', 'investment_history.csv')
+# df = pd.read_csv(data_filename)
+# new_row = pd.DataFrame({'Date':[4], 'Adj Close':[23]})
+# df = pd.concat([df, new_row],ignore_index=True)
+# df.to_csv(data_filename, index=False)
 
 # from datetime import datetime
 

@@ -126,9 +126,9 @@ daily_times = [7, 1, 2, 3, 4]
 
 def schedule_daily():
     today = datetime.now()
-    if today.isoweekday() not in daily_times or (today.hour >= 20 and today.second >= 1):
+    if today.isoweekday() not in daily_times or (today.hour >= 21 and today.second >= 1):
         today = today+timedelta(days=1)
-    exec_date = today.replace(hour=17, minute=55, second=5, microsecond=0)
+    exec_date = today.replace(hour=20, minute=10, second=0, microsecond=0)
     global scheduler
     scheduler = BlockingScheduler()
     scheduler.add_job(run_model, 'date', run_date=exec_date)
@@ -158,7 +158,8 @@ def momentum_algo(cur_price, last_price): # Works On Hourly Data
 def run_investment_algorithm():
     # Opening History and Minute Data
     trade_history = pd.read_csv(history_filename)
-    minute_data = yf.download('VOO', start='2025-01-06', interval='1m')
+    today = datetime.now()
+    minute_data = yf.download('VOO', start=today.strftime('%Y-%m-%d'), interval='1m')
     minute_data.columns = minute_data.columns.get_level_values(0) # Removes multi-header structure
 
     # Gathering Values For Calculations
@@ -205,7 +206,8 @@ def schedule_hourly():
 def run_minute_stop_loss():
     # Opening History and Minute Data
     trade_history = pd.read_csv(history_filename)
-    minute_data = yf.download('VOO', start='2025-01-06', interval='1m')
+    today = datetime.now()
+    minute_data = yf.download('VOO', start=today.strftime('%Y-%m-%d'), interval='1m')
     minute_data.columns = minute_data.columns.get_level_values(0) # Removes multi-header structure
 
     # Gathering Values For Calculations
