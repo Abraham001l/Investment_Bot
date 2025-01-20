@@ -7,8 +7,8 @@ import os
 cur_dir = os.getcwd()
 
 # ---------- Basic Params ----------
-data_filename = 'VOO_2020-10-15_2023-12-29.csv'
-model_filename = 'VOO_2020-10-15_2023-12-29.pkl'
+data_filename = 'VOO_2020-10-15_2023-12-29_Adj.csv'
+model_filename = 'VOO_2020-10-15_2023-12-29_Adj.pkl'
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
 model_filename = os.path.join(cur_dir, 'KNN\\Development\\Models', model_filename)
 

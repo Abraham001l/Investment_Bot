@@ -10,9 +10,10 @@ ticker = 'VOO'
 all_true = False
 prcnt_gain = .01
 start_date = '2024-01-02'#2021-04-30
-end_date = '2024-12-06' # 2024-06-28
-data_filename = 'VOO_2024-01-02_2024-12-06.csv'
+end_date = '2024-12-31' # 2024-06-28
+data_filename = 'VOO_2024-01-02_2024-12-31_Adj.csv'
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
+close = 'Adj Close'
 
 # ---------- Getting Stock Data ----------
 data = yf.download(ticker, start='2020-01-01', auto_adjust=False)
@@ -21,17 +22,17 @@ data['Date'] = data['Date'].dt.strftime('%Y-%m-%d')  # Convert Date to strings
 data.columns = data.columns.get_level_values(0) # Removes multi-header structure
 
 # ---------- Creating Features ----------
-data['Return'] = data['Close'].pct_change()
+data['Return'] = data[close].pct_change()
 data.dropna()
 
 # MACD (Percentage)
-ema_12 = data['Close'].ewm(span=12, adjust=False).mean()
-ema_26 = data['Close'].ewm(span=26, adjust=False).mean()
+ema_12 = data[close].ewm(span=12, adjust=False).mean()
+ema_26 = data[close].ewm(span=26, adjust=False).mean()
 data.loc[:, 'MACD (%)'] = 100 * (ema_12 - ema_26) / ema_12
 
 # Percentage distance from 200-day MA
-ma_200 = data['Close'].rolling(window=200).mean()
-data.loc[:, '% Distance 200MA'] = 100 * (data['Close'] - ma_200) / ma_200
+ma_200 = data[close].rolling(window=200).mean()
+data.loc[:, '% Distance 200MA'] = 100 * (data[close] - ma_200) / ma_200
 
 # Volume Ratio
 data.loc[:, 'Volume Ratio'] = data['Volume'] / data['Volume'].rolling(window=20).mean()
@@ -48,7 +49,7 @@ data.loc[:, 'Volatility'] = data['Return'].rolling(window=20).std() * np.sqrt(25
 data.dropna(inplace=True)
 
 # Adding Breakout Labels
-data.loc[:, 'Breakout'] = (data['Close'].shift(-5) >= (data['Close'] * (1+prcnt_gain))).astype(int)
+data.loc[:, 'Breakout'] = (data[close].shift(-5) >= (data[close] * (1+prcnt_gain))).astype(int)
 data.dropna(inplace=True)
 data.reset_index(drop=True, inplace=True)
 

@@ -11,8 +11,8 @@ cur_dir = os.getcwd()
 # ---------- Basic Params ----------
 ticker = 'VOO'
 prcnt_gain = .01
-data_filename = 'VOO_2024-01-02_2024-12-06.csv'
-model_filename = 'VOO_2020-10-15_2023-12-29.pkl' #VOO_2020-10-15_2024-06-28.pkl
+data_filename = 'VOO_2024-01-02_2024-12-31_Adj.csv'
+model_filename = 'VOO_2020-10-15_2023-12-29_Adj.pkl' #VOO_2020-10-15_2024-06-28.pkl
 data_filename = os.path.join(cur_dir, 'KNN\\Development\\Datasets', data_filename)
 model_filename = os.path.join(cur_dir, 'KNN\\Development\\Models', model_filename)
 central_tz = pytz.timezone('US/Central')
@@ -75,12 +75,18 @@ for i in range(len(data)-1):
     # Updating Balacne
     balances.append(balance)
 data['Balance'] = balances+[balance]
+f_balance = data.iloc[-1]['Balance']
 
 # ---------- Plotting Simulation ----------
 plt.figure(figsize=(12, 6))
 plt.plot(data['Date'], data['Balance'], label='Portfolio Balance')
+# Adjusting x-axis ticks to show specific dates
+xticks = data['Date'][::len(data)//10]  # Show only 10 evenly spaced dates
+plt.xticks(ticks=xticks, labels=xticks, rotation=45, ha='right')
+
 plt.xlabel('Date')
 plt.ylabel('Balance ($)')
-# plt.title(f'Investment Strategy Performance on {ticker} {test_data.iloc[-1]['Balance']}')
+plt.title(f"Investment Strategy Performance on {ticker} {f_balance}")
 plt.legend()
+plt.tight_layout()
 plt.show()
